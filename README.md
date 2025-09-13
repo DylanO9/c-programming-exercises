@@ -1,2 +1,9 @@
-# c-programming-exercises
-My solutions and programs while working through "The C Programming Language" by Brian Kernighan and Dennis Ritchie
+# C Programming Exercises
+
+This repo contains my solutions and practice programs from *The C Programming Language* (K&R).
+
+## Structure
+- **chapter01/** – Basic introduction, I/O, and simple exercises
+- **chapter02/** – Types, operators, and expressions
+- etc.
+
