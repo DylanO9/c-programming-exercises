@@ -1,6 +1,7 @@
 # Ignore compiled executables
-file
-file.exe
+**/*.exe
 
 # Ignore object files
-*.o
+**/*.o
+**/*.out
+
