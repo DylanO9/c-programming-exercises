@@ -2,6 +2,13 @@
 #include <string.h>
 #include <math.h>
 
+/*
+    Purpose: Extend the itoa function to handle the largest negative integer
+            - Why does it not work for the original?
+                - It does not work for the original because when you convert a negative number back to a positive there, there is a 1 integer difference.
+                - Therefore, when converting from negative to positive there is an integer overflow, so to negate this we must convert to a long then an unsigned integer
+*/
+
 void itoa(int n, char s[]);
 void reverse(char s[]);
 
