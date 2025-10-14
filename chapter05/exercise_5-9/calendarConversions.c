@@ -13,7 +13,7 @@ int main()
     int d = day_of_year(2019, 5, 20);
     printf("days: %d\n", d);
     int pmonth, pday;
-    month_day(2018, 20, &pmonth, &pday);
+    month_day(2018, 31, &pmonth, &pday);
     printf("month_day conversion month: %d\nday:%d\n", pmonth, pday);
 }
 
@@ -53,7 +53,7 @@ void month_day(int year, int yearday, int *pmonth, int *pday)
     }
     char *curr_days = *(daytab + leap) + 1; 
     for (i = 1; yearday > *curr_days; curr_days++, i++)
-        yearday -= *(curr_days + i);
+        yearday -= *curr_days;
     *pmonth = i;
     *pday = yearday;
 }
