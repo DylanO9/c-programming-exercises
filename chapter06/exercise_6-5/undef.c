@@ -33,11 +33,12 @@ int undef(char *name) {
             if (strcmp(node->name, name) == 0) {
                 if (prev == NULL) {
                     hashtab[hash(name)] = node->next;
-                    free(node);
                 } else {
                     prev->next = node->next;
-                    free(node);
                 }
+                free(node->name);
+                free(node->defn);
+                free(node);
             }
         }
     }
