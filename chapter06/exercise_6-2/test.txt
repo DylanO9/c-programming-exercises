@@ -1,0 +1,26 @@
+#include <stdio.h>
+
+// Single-line comment with fake identifiers: int fooBar123;
+/*
+   Multi-line comment:
+   float sampleVar;
+*/
+
+int main() {
+    int alpha, alphabetSoup, alphasort;
+    double deltaForce, deltaWing;
+    char *name = "this is a string with int fakeVar inside";
+    
+    for (int i = 0; i < 10; i++) {
+        float deltaRay = 1.0;
+        int beta1 = 5, betaVersion = 10;
+        printf("%d %f\n", i, deltaRay);
+    }
+    
+    // Another tricky one
+    char* gamma = "ignore_me /* not a comment */ still a string";
+    int alphabetZoo;
+
+    return 0;
+}
+
