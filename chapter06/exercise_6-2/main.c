@@ -42,8 +42,6 @@ void read_program() {
         switch (state) {
             case VARIABLE:
                 // This next token should be a variable name, there can be more if extra , so read tokens until a ; or =
-                token[0] = '\0';
-                token_idx = 0; 
                 if (isalpha(c)) {
                     token[token_idx++] = c;
                     token[token_idx] = '\0';
@@ -54,7 +52,6 @@ void read_program() {
                     token[0] = '\0';
                     token_idx = 0;
                 }
-
                 else if (c == ';' || c == '=') {
                     // This is the end of variable mode
                     printf("%s\n", token);
@@ -67,23 +64,31 @@ void read_program() {
                 if (c == '\n' || c == ' ' || c == '\t' || c == '\r' || c == '\v' || c == '\f') {
                     token[token_idx++] = '\0';
                     
-                    if (is_datatype(token)) {
+                    if (is_datatype(token) && token_idx != 0) {
                         state = VARIABLE; 
                     }
+                    token[0] = '\0';
+                    token_idx= 0;
                 }
                 else if (c == '/') {
                     c = getchar();
                     if (c == '/') {
                         state = COMMENT;
+                        token_idx = 0;
+                        token[0] = '\0';
                     } 
                     else if (c == '*') {
                         state = MULTI_COMMENT;
+                        token_idx = 0;
+                        token[0] = '\0';
                     }    
                     else {
                         putchar(c);
                     }
                 }
                 else if (c == '\"') {
+                    token_idx = 0;
+                    token[0] = '\0';
                     state = QUOTES;
                 }
                 else {
@@ -94,9 +99,12 @@ void read_program() {
                 // Ignore inside, but if we see another " with no \ beforehand, then end
                 if (c == '\\') {
                     c = getchar();
-                    if (c == '\"') {
-                        state = NORMAL;
-                    }
+                    if (c == '\"')
+                        ; 
+                    putchar(c);
+                }
+                else if('\"') {
+                    state = NORMAL;
                 }
                 break;
             case COMMENT:
