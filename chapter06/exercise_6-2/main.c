@@ -1,141 +1,126 @@
 #include <stdio.h>
-#include <string.h>
 #include <ctype.h>
-#define NORMAL              1
-#define QUOTES              2
-#define COMMENT             3
-#define MULTI_COMMENT       4
-#define VARIABLE            5
+#include <string.h>
 
-void process_token();
-void read_program();
-int is_datatype(const char *word); 
+/*
+    Purpose: Write a program that reads a C program nad prints in alphabetical order each group of variable names that are identical in the first 6 characters
+*/
 
-const char *datatypes[] = {
-    "int", "long", "short", "float", "double", "char"    
-};
+int get_word(char *, int);
+int get_word_skip(char *, int);
+int read_program(int);
+int is_datatype(char *);
 
-struct list_node {
-    char *word;
-    struct list_node *node;
-};
+char *datatypes[] = {"int", "long", "short", "float", "double", "char", NULL};
 
-struct tree_node {
-    char *first_six;
-    struct tree_node *left_node;
-    struct tree_node *right_node;
-};
+#define CHAR_LIMIT 100
 
 int main() {
-   read_program(); 
+    read_program(0);
 }
 
-char token[40];
-int token_idx;    
-char prev_token[40] = "\0";
-
-void read_program() {
-    int state = NORMAL;
-    int c;
-
-    while((c = getchar()) != EOF) {
-        switch (state) {
-            case VARIABLE:
-                // This next token should be a variable name, there can be more if extra , so read tokens until a ; or =
-                if (isalpha(c)) {
-                    token[token_idx++] = c;
-                    token[token_idx] = '\0';
-                }
-                else if (c == ' ') {
-                    // Add to the binary tree
-                    printf("%s\n", token);
-                    token[0] = '\0';
-                    token_idx = 0;
-                }
-                else if (c == ';' || c == '=') {
-                    // This is the end of variable mode
-                    printf("%s\n", token);
-                    token[0] = '\0';
-                    token_idx = 0;
-                    state = NORMAL;
-                }
-                break;
-            case NORMAL:
-                if (c == '\n' || c == ' ' || c == '\t' || c == '\r' || c == '\v' || c == '\f') {
-                    token[token_idx++] = '\0';
-                    
-                    if (is_datatype(token) && token_idx != 0) {
-                        state = VARIABLE; 
-                    }
-                    token[0] = '\0';
-                    token_idx= 0;
-                }
-                else if (c == '/') {
-                    c = getchar();
-                    if (c == '/') {
-                        state = COMMENT;
-                        token_idx = 0;
-                        token[0] = '\0';
-                    } 
-                    else if (c == '*') {
-                        state = MULTI_COMMENT;
-                        token_idx = 0;
-                        token[0] = '\0';
-                    }    
-                    else {
-                        putchar(c);
-                    }
-                }
-                else if (c == '\"') {
-                    token_idx = 0;
-                    token[0] = '\0';
-                    state = QUOTES;
-                }
-                else {
-                    token[token_idx++] = c;        
-                }
-                break;
-            case QUOTES:
-                // Ignore inside, but if we see another " with no \ beforehand, then end
-                if (c == '\\') {
-                    c = getchar();
-                    if (c == '\"')
-                        ; 
-                    putchar(c);
-                }
-                else if('\"') {
-                    state = NORMAL;
-                }
-                break;
-            case COMMENT:
-                if (c == '\n') {
-                    state = NORMAL;
-                }
-                break;
-            case MULTI_COMMENT:
-                if (c == '*') {
-                    c = getchar();
-                    if (c == '/') {
-                        state = NORMAL;
-                    } 
-                    else {
-                        putchar(c);
-                    }
-                }
-                break;
-        }    
-    } 
-}
-
-
-//void add_to_tree(char var_name[20]) {
-//}
-
-int is_datatype(const char *word) {
-    for (int i = 0; datatypes[i] != NULL; i++) {
-        if (strcmp(word, datatypes[i]) == 0)
-            return 1;
+int read_program(int prefix_len) {
+    /*
+        Flow:
+        - Process words
+        - Identify if a word we are looking at is_datatype
+        - If it is a datatype, then wait for the next token
+        
+        - How do we know which tokens are variables?
+        - The token directly after an is_datatype
+            - If we are in this waiting_for_variable state, then any token after a , is what we want as well
+        - We stop the waiting-for_variable state when we see a ;
+    */
+    char word[CHAR_LIMIT];
+    char *w = word;
+    int waiting_for_variable = 0;
+    while ((get_word_skip(w, CHAR_LIMIT) != EOF)) {
+        if (waiting_for_variable) {
+            if (strcmp(w, ";") == 0 || strcmp(w, "(") == 0) waiting_for_variable = 0;
+            if (isalpha(*w)) printf("%s\n", w);
+        } else if (is_datatype(w)) {
+            waiting_for_variable = 1;
+        }
     }
-    return 0;
 }
 
+int get_word(char *word, int lim) {
+    /*
+        Flow:
+        - Skip over all whitespace preceding
+        - Check if we are at an EOF
+        - Check if is not alpha or _ meaning that we are not at a variable
+        - Keep reading variable, then ungetc when we overflow
+    */
+    char *w = word;
+    int c;
+    
+    while (isspace(c = getchar()))
+        ;
+
+    if (c != EOF)
+        *w++ = c;    
+    
+    if (!isalpha(c) && c != '_') {
+        *w = '\0';
+        return c;
+    }
+    
+    for (; --lim > 0; w++) {
+        if (!isalpha(*w = getchar()) && *w != '_') {
+            ungetc(*w, stdin);
+            break;
+        } 
+    }
+    *w = '\0';
+    return word[0];
+}
+
+int get_word_skip(char *word, int lim) {
+    /*
+        Flow:
+        - We want to skip over single line comments
+        - We want to skip over multi-line comments
+        - We want to skip over quotes
+    */
+    int c, d;
+    while((c = get_word(word, lim)) != EOF) {
+        if (c == '/') {
+            if ((d = getchar()) == '/') {
+                while ((c = getchar()) != '\n' && c != EOF)
+                   ; 
+            } else if (d == '*') {
+                while ((c = getchar()) != EOF) {
+                    if (c == '*' && (d = getchar()) == '/') {
+                        break;
+                    }
+                }
+            } else {
+                ungetc(d, stdin);
+            }
+        } else if (c == '\"') {
+            while ((c = getchar()) != EOF && c != '\"') {
+                if (c == '\\') getchar();
+            }
+        } else {
+            return c;
+        }
+    }
+    return EOF;
+}
+
+int is_datatype(char *word) {
+    /*
+        Flow:
+        - Iterate through datatypes array, and strcmp
+    */
+    
+    char **dt_iter = datatypes;
+    for (; *(dt_iter) != NULL; dt_iter++) {
+        if (strcmp(*dt_iter, word) == 0) {
+            return 1;
+        }
+    } 
+
+    return 0; 
+}
