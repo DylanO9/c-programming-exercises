@@ -3,15 +3,16 @@
 #include <ctype.h>
 #include <string.h>
 
-#define CHAR_LIMIT  100
-#define MAX_WORDS   10
+#define CHAR_LIMIT          100
+#define MAX_WORDS           10
+#define DEFAULT_N_LETTERS   1
 
 /*
     Purpose: Write a program that reads a C program nad prints in alphabetical order each group of variable names that are identical in the first 6 characters
 */
 
 typedef struct tree_node {
-    char first;
+    char *first;
     struct list_node *head; 
     struct tree_node *left;
     struct tree_node *right;
@@ -31,9 +32,12 @@ void in_order_traversal(tree_node *);
 
 
 char *datatypes[] = {"int", "long", "short", "float", "double", "char", NULL};
+int len_n = DEFAULT_N_LETTERS;
 
-
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc == 2) {
+        len_n = (int) **(argv+1) - '0';
+    }
     read_program(0);
 }
 
@@ -86,7 +90,8 @@ void in_order_traversal(tree_node *root){
     in_order_traversal(root->left);
     
     list_node *curr = root->head;
-    printf("%c: ", root->first);
+    printf("%s: ", root->first);
+    free(root->first);
     list_node *prev = root->head;
     while (curr != NULL) {
         printf(" %s", curr->word);
@@ -107,11 +112,20 @@ tree_node *add_to_tree(char *word, tree_node *root) {
         - If a tree_node exists, then create a list_node for the word, and add it to the linked_list
         - If a tree_node does not exist, then create a node link it, then create a list_node and add it as the head
     */
+    char *n_letters = malloc(len_n + 1);
+    if (strlen(word) >= len_n) {
+        strncpy(n_letters, word, len_n + 1);
+        
+        // We want to make sure the last spot is a null terminator
+        n_letters[len_n] = '\0';
+    } else {
+        return NULL;    
+    }
     if (root == NULL) {
         tree_node *new_tree_node = (tree_node *) malloc(sizeof(tree_node));
         new_tree_node->left = NULL;
         new_tree_node->right = NULL;
-        new_tree_node->first = *word; 
+        new_tree_node->first = n_letters;
 
         // Create a new list_node
         list_node *new_list_node = (list_node *) malloc(sizeof(list_node));
@@ -119,9 +133,9 @@ tree_node *add_to_tree(char *word, tree_node *root) {
         strcpy(new_list_node->word, word); 
         new_tree_node->head = new_list_node;
         return new_tree_node;
-    } else if (root->first == *word) {
+    } else if (strcmp(root->first, n_letters) == 0) {
         // We've found the tree_node that should have this word
-        printf("%c\n", root->first);
+        printf("%s\n", root->first);
         list_node *new_list_node = (list_node *) malloc(sizeof(list_node));
         new_list_node->next = NULL;
         strcpy(new_list_node->word, word);
@@ -134,7 +148,7 @@ tree_node *add_to_tree(char *word, tree_node *root) {
         return root;
     }
     
-    int compare = *word - root->first;
+    int compare = strcmp(n_letters, root->first);
     if (compare > 0) {
         // The node we are looking for is on the right
         root->right = add_to_tree(word, root->right);   
