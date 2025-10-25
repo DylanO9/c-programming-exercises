@@ -87,9 +87,12 @@ void in_order_traversal(tree_node *root){
     
     list_node *curr = root->head;
     printf("%c: ", root->first);
+    list_node *prev = root->head;
     while (curr != NULL) {
         printf(" %s", curr->word);
         curr = curr->next;
+        free(prev);
+        prev = curr;
     }
     printf("\n");
  
