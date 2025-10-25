@@ -1,0 +1,24 @@
+#include <stdio.h>
+#define MAX_LENGTH 100
+#define DEBUG 1
+
+// This is a single-line comment
+/*
+   This is a multi-line comment.
+   It should be completely ignored.
+*/
+
+int main(void) {
+    int count_words = 0;
+    char *message = "Hello, world!";  // String constant
+
+    if (DEBUG) {
+        printf("Count_words value: %d\n", count_words);
+    }
+
+    // Another tricky string
+    char *quote = "This string has #define and /* comments */ inside!";
+
+    return 0;
+}
+
