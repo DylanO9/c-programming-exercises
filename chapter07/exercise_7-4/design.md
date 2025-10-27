@@ -1,0 +1,14 @@
+- What does scanf do?
+    - Scanf is pretty much like printf, but we are storing the values from the format into the variables we pass
+    - For example: int scanf(char \*format, ...) 
+    - Reads the characters form standard input, and interprets them according to the specification in format, and stores the results through the remaining arguments
+    - Input must match the control specification
+- What features of scanf are we going to support?
+    - d for decimal integer
+    - s character string
+    - f floating-point number  
+- How is this going to work?
+    - scanf skips blanks and tabs in its format string, skips over whitespace to find a token
+    - We can skip blanks and tabs, and then grab the token
+ - What if the token is together like "%d%s"?
+ 
