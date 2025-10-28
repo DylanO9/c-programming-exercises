@@ -4,6 +4,7 @@
 
 #define OPEN_MAX    20
 #define PERMS       0666    /* RW for owner, group, others */
+#define BUFSIZE     1024
 
 typedef struct _iobuf {
     int cnt;            /* characters left */
@@ -70,4 +71,30 @@ FILE *fopen(char *name, char *mode) {
 }
 
 int _fillbuf(FILE *fp) {
+    int bufsize;
+
+    // Check if there were any errors previously
+    if (fp->eof_flag || fp->err_flag || fp->read_flag) {
+        return EOF;
+    }
+    bufsize = fp->unbuf_flag ? 1 : BUFSIZE;
+    
+    if (fp->base == NULL) {
+        if((fp->base = (char *)malloc(bufsize)) == NULL)
+            return EOF;
+    }
+    fp->ptr = fp->base;
+    fp->cnt = read(fp->fd, fp->ptr, bufsize);
+    
+    // Not enough characters 
+    if (--fp->cnt < 0) {
+        if (fp->cnt == -1)
+            fp->eof_flag = 1;
+        else
+            fp->err_flag = 1;
+        fp->cnt = 0;
+        return EOf;
+    }
+    
+   return (unsigned char) *fp->ptr++;
 }
