@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #define OPEN_MAX    20
 #define PERMS       0666    /* RW for owner, group, others */
@@ -23,8 +24,30 @@ FILE _iob[OPEN_MAX];
 FILE *fopen(char *, char *);
 int _fillbuf(FILE *);
 
-int main() {
+int main(void) {
+    FILE *fp;
+    int c;
 
+    fp = fopen("test.txt", "r");
+    if (fp == NULL) {
+        perror("fopen failed");
+        return 1;
+    }
+
+    printf("Reading file contents:\n\n");
+
+    while ((c = _fillbuf(fp)) != EOF) {
+        putchar(c);
+    }
+
+    if (fp->err_flag)
+        printf("\n[Error occurred during read]\n");
+    else if (fp->eof_flag)
+        printf("\n[EOF reached]\n");
+
+    close(fp->fd);
+    free(fp->base);
+    return 0;
 }
 
 FILE *fopen(char *name, char *mode) {
@@ -74,7 +97,7 @@ int _fillbuf(FILE *fp) {
     int bufsize;
 
     // Check if there were any errors previously
-    if (fp->eof_flag || fp->err_flag || fp->read_flag) {
+    if (fp->eof_flag || fp->err_flag || !fp->read_flag) {
         return EOF;
     }
     bufsize = fp->unbuf_flag ? 1 : BUFSIZE;
@@ -93,7 +116,7 @@ int _fillbuf(FILE *fp) {
         else
             fp->err_flag = 1;
         fp->cnt = 0;
-        return EOf;
+        return EOF;
     }
     
    return (unsigned char) *fp->ptr++;
