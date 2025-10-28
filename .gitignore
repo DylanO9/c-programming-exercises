@@ -5,3 +5,9 @@
 **/*.o
 **/*.out
 
+# Other executables
+bits
+fields
+fast_cat
+slow_cat
+largefile.bin
