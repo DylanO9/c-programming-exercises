@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 
-int print_file(FILE *fp);
+void print_file(FILE *fp, const char *filename, int *page_count);
 
 int main(int argc, char *argv[]) {
     FILE *fp;
@@ -12,25 +12,34 @@ int main(int argc, char *argv[]) {
     
     if (argc == 1) {
         fprintf(stderr, "Not enough files\n");
+        return 1;
     }
     while (--argc > 0) {
-        page_count++;
         if ((fp = fopen(*++argv, "r")) == NULL) {
             fprintf(stderr, "Can't open file: %s\n", *argv);
+            continue; 
         } else {
-            printf("---------------------\n");
-            printf("Title: %s\tCount: %d\n", *argv, page_count);
-            print_file(fp);
+            print_file(fp, *argv, &page_count);
             fclose(fp);
         }
     }
     return 0;
 }
 
-int print_file(FILE *fp) {
+void print_file(FILE *fp, const char *filename, int *page_count) {
     int c;
+    int num_lines = 0;
+
+    printf("\fTitle: %s\tPage: %d\n\n", filename, ++(*page_count));
+
     while ((c = getc(fp)) != EOF) {
-        putchar(c);    
-    } 
-    return 1;
+        putchar(c);
+        if (c == '\n') {
+            num_lines++;
+            if (num_lines == 60) {  // new page every 60 lines
+                printf("\fTitle: %s\tPage: %d\n\n", filename, ++(*page_count));
+                num_lines = 0;
+            }
+        }
+    }
 }
