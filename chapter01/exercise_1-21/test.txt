@@ -1,0 +1,6 @@
+Here is a test file that can test our entab program
+We want to see if a string of blanks can be replaced by the minimum number of tabs
+and blanks to achieve the same spacing
+Here is the test             boom
+Here is with mixed tabs and spaces            there
+   here is a good test too for small amounts of spaces and no tabs
