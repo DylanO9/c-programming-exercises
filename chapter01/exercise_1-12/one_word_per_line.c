@@ -2,11 +2,13 @@
 #define IN	1	/* inside a word */
 #define OUT	0	/* outside a word */
 int main() {
-	int c, state = OUT;
+	int c, state = IN;
 	int firstWord = 1;
 	while ((c = getchar()) != EOF) {
-		if (c == ' ' || c == '\n' || c == '\t') 
+		if (c == ' ' || c == '\n' || c == '\t') {
 			state = OUT;
+            continue;
+        }
 		else if (state == OUT) {
 			state = IN;
 			putchar('\n');
