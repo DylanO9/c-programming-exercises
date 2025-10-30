@@ -1,0 +1,12 @@
+# Answer for exercise 1-11
+- How do we define a word for this word count program?
+    - A word is any sequence of characters that does not contain a blank, tab or newline
+- How would you test the word count program?
+    - We would want to test the limits
+    - Limit one: no characters or words
+    - One word
+    - Many words on one line
+    - Many words on many lines
+- What kinds of input are most likely to uncover bugs if there are any? 
+    - Inputs with escape sequences or special characters
+    - However, most of the cases that probably would uncover bugs are going to involve transition from an IN and OUT statement many times
