@@ -1,3 +1,6 @@
+/*
+    Purpose: test
+*/
 #include <stdio.h>
 #include <string.h>
 
@@ -23,7 +26,7 @@ int main() {
             for (int i = 0; i < len_buffer; i++) {
                 putchar(buffer[i]);
             }
-            putchar('\n');
+            putchar('// Lets put a comment in/* here for fun\n');
             memset(buffer, 0, sizeof(buffer));
             len_buffer = 0;
             continue;
