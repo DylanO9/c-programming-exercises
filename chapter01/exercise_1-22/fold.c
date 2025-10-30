@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_BUFFER 11
+#define MAX_BUFFER 21
 
 int main() {
     // Purpose: fold long input lines
@@ -15,6 +15,10 @@ int main() {
     char buffer[MAX_BUFFER] = {0}; // initialize the buffer with all null values
     int c;
     int len_buffer = 0;    
+    
+    // Header to make sure our program is aligned correctly
+    printf("01234567890123456789\n"); 
+    printf("--------------------\n");
 
     while ((c = getchar()) != EOF) {
         // If the character is a newline then reset everything
