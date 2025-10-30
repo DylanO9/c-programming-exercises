@@ -32,7 +32,7 @@ int main() {
                 }
                 continue;
             }
-            if (c == '"') {
+            if (c == '\"') {
                 putchar(c);
                 mode = STRING_MODE;
             }
@@ -45,7 +45,7 @@ int main() {
             }
         }
         else if (mode == STRING_MODE) {
-            if (c == '\\') {
+            if (c == '/') {
                 putchar(c);
                 c = getchar();
                 if (c == EOF) {
@@ -53,13 +53,16 @@ int main() {
                 }
                 putchar(c);
             }
-            else if (c == '"') {
+            else if (c == '\"') {
                 putchar(c);
                 mode = NORMAL_MODE;
             }
+            else {
+                putchar(c);    
+            }
         }
         else if (mode == CHARACTER_MODE) {
-            if (c == '\\') {
+            if (c == '/') {
                 putchar(c);
                 c = getchar();
                 if (c == EOF) {
@@ -70,6 +73,9 @@ int main() {
             else if (c == '\'') {
                 putchar(c);
                 mode = NORMAL_MODE;
+            }
+            else {
+                putchar(c);
             }
         }
         else if (mode == SINGLE_COMMENT_MODE) {
@@ -88,10 +94,6 @@ int main() {
 
                 if (c == '/') {
                     mode = NORMAL_MODE;
-                }
-                else {
-                    putchar('*');
-                    putchar(c);
                 }
             }
         }     
